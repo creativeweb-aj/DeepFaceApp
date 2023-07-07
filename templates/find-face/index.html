@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div>
+    <div>
+        <form id="upload-images" method="post" enctype="multipart/form-data">
+            <label for="images">Upload Images: </label>
+            <input type="file" id="images" name="images">
+            <button type="button" onclick="uploadImages()">Upload</button>
+        </form>
+    </div>
+
+    <br>
+    <div>
+        <form id="upload-target-images" method="post" enctype="multipart/form-data">
+            <label for="image">Target Image: </label>
+            <input type="file" id="image" name="image">
+            <button type="button" onclick="uploadTargetImages()">Upload</button>
+        </form>
+    </div>
+
+    <br>
+    <input type="text" placeholder="Target image name with extension..." id="image_names" width="500px">
+    <br>
+    <button type="button" onclick="findFace()">Find faces</button>
+    <div id="matched-images">
+
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+<script>
+    function uploadImages(){
+        var form_data = new FormData($('#upload-images')[0]);
+        $.ajax({
+            type: 'POST',
+            url: 'upload-images',
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function(res) {
+                alert(res.message)
+            },
+        });
+    }
+
+    function uploadTargetImages(){
+        var form_data = new FormData($('#upload-target-images')[0]);
+        $.ajax({
+            type: 'POST',
+            url: 'upload-target-images',
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function(res) {
+                alert(res.message)
+            },
+        });
+    }
+
+    function findFace(){
+        $('#matched-images').html('')
+        $.ajax({
+            type: 'POST',
+            url: 'find-face',
+            data: JSON.stringify({'file_name': $('#image_names').val()}),
+            contentType: "application/json",
+            success: function(res) {
+                for(let i=0; i<res.data.images.length; i++){
+                    let url = res.data.images[i]
+                    let s = '<img src='+url+' alt="Face matched" width="500" height="600">'
+                    $('#matched-images').append(s)
+                }
+            },
+        });
+    }
+</script>
+</body>
+</html>
